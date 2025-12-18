@@ -1,12 +1,15 @@
 const std = @import("std");
-const bpt = @import("bplustree").BPlusTree(i32, 4);
+const bpt = @import("bplustree").BPlusTree(i32, i32, 4);
 
 pub fn main() !void {
-    var tree = bpt.init(&std.heap.page_allocator);
+    var dbga: std.heap.DebugAllocator(.{}) = .init;
+    defer _ = dbga.deinit();
+
+    var tree = bpt.init(dbga.allocator());
     defer tree.deinit();
 
     // Insert enough keys to force multiple splits and balancing
-    const N = 100;
+    const N = 1024 * 1024;
     var k: i32 = 0;
     while (k < N) : (k += 1) {
         try tree.insert(k, k * 10);

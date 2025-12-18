@@ -5,7 +5,7 @@ pub fn main() !void {}
 
 // Basic insert/search test
 test "insert and search" {
-    var tree = bpt.init(&std.testing.allocator);
+    var tree = bpt.init(std.testing.allocator);
     defer tree.deinit();
     try tree.insert(1, 100);
     try tree.insert(2, 200);
