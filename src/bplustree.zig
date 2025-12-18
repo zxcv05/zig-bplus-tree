@@ -345,16 +345,20 @@ pub fn BPlusTree(comptime K: type, comptime V: type, comptime DEGREE: usize) typ
 
         /// Iterator for in-order traversal of the B+ tree.
         pub const Iterator = struct {
+            pub const KV = struct { key: K, value: V };
+        
             current: ?NodePtr,
             idx: usize,
 
             /// Returns the next key-value pair, or null if done.
-            pub fn next(self: *Self) ?struct { key: K, value: V } {
+            pub fn next(self: *Iterator) ?KV {
                 if (self.current) |node| {
                     if (self.idx < node.n) {
-                        const result = .{ .key = node.keys[self.idx], .value = node.values[self.idx].? };
-                        self.idx += 1;
-                        return result;
+                        defer self.idx += 1;
+                        return .{
+                            .key = node.keys[self.idx],
+                            .value = node.values[self.idx].?,
+                        };
                     } else if (node.next) |next_node| {
                         self.current = next_node;
                         self.idx = 0;
